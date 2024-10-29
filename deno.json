@@ -1,13 +1,13 @@
 {
   "tasks": {
-    "dev": "deno run --watch main.ts"
+    "dev": "deno run --watch sdfsd.ts"
   },
   "imports": {
     "@std/assert": "jsr:@std/assert@1",
     "@std/cli": "jsr:@std/cli@^1.0.6"
   },
   "name": "@logitail/sdfsd",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "exports": "./main.ts",
-  "license": "MIT"
+  "license": "MITdeno "
 }
