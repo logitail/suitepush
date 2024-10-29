@@ -1,13 +1,27 @@
 // import necessary Deno modules and any helper libraries
+//TODO once stable package is release update this link to jsr
+// import { Command } from "jsr:@cliffy/command";
 import { Command } from "https://deno.land/x/cliffy@v0.20.1/command/mod.ts";
+
+// import templates from './utils/xml/xml-templates';
+import pkg from "./deno.json" with { type: "json" };
+
+
+
+
+
+
+
 
 // Initialize CLI
 const cli = new Command()
   .name("sdfsd")
-  .version("1.0.0")
+  // .version("0.1.0") //TODO grab from deno.json?
+  .version(pkg.version) //TODO grab from deno.json?
   .description("CLI for deploying SuiteScripts to NetSuite")
   .action(() => {
     console.log("Welcome to SDFSD - NetSuite SuiteScript Deployer");
+
   });
 
 // Automated deployment command
@@ -22,7 +36,7 @@ cli.command("deploy", "Deploy a SuiteScript to NetSuite")
   });
 
 // XML generation command
-cli.command("generate-xml", "Generate XML for SuiteScript")
+cli.command("create", "Generate XML for SuiteScript")
   .option("-o, --output <output:string>", "Output directory for XML")
   .action(async (options) => {
     const { output } = options;
@@ -32,7 +46,7 @@ cli.command("generate-xml", "Generate XML for SuiteScript")
   });
 
 // Deployment wizard
-cli.command("wizard", "Interactive wizard for SuiteScript deployment")
+cli.command("wizard2", "Interactive wizard for SuiteScript deployment")
   .action(async () => {
     console.log("Starting deployment wizard...");
     // Placeholder: Insert interactive wizard logic here

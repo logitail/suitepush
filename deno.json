@@ -1,13 +1,12 @@
 {
   "tasks": {
-    "dev": "deno run --watch sdfsd.ts"
+    "dev": "denon run --watch --allow-read --allow-write sdfsd.ts"
   },
   "imports": {
-    "@std/assert": "jsr:@std/assert@1",
     "@std/cli": "jsr:@std/cli@^1.0.6"
   },
   "name": "@logitail/sdfsd",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "exports": "./sdfsd.ts",
   "license": "MITdeno "
 }
