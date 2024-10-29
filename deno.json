@@ -8,6 +8,6 @@
   },
   "name": "@logitail/sdfsd",
   "version": "1.0.0",
-  "exports": "./main.ts",
+  "exports": "./sdfsd.ts",
   "license": "MITdeno "
 }
