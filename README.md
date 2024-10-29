@@ -72,6 +72,10 @@ This project is licensed under the MIT License. See the `LICENSE` file for more 
 
 ## Versioning
 
-0.1.0 setup deno and github actions for publishing
+v0.1.1 layout requirement
+- [ ] determination of current sdf folder has a suiteconfig.js file
+- [ ]  
+
+v0.1.0 setup deno and github actions for publishing
 - [ ] publish with stable jsr package of cliffy '@cliffy/command'
 - [x] boilerplate code

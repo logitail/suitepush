@@ -4,36 +4,31 @@
 import { Command } from "https://deno.land/x/cliffy@v0.20.1/command/mod.ts";
 
 // import templates from './utils/xml/xml-templates';
-import pkg from "./deno.json" with { type: "json" };
-
-
-
-
-
-
-
+import pkgdetails from "./deno.json" with { type: "json" };
 
 // Initialize CLI
 const cli = new Command()
   .name("sdfsd")
   // .version("0.1.0") //TODO grab from deno.json?
-  .version(pkg.version) //TODO grab from deno.json?
+  .version(pkgdetails.version) //TODO grab from deno.json?
   .description("CLI for deploying SuiteScripts to NetSuite")
+  .option("create", "create XML")
   .action(() => {
+    
     console.log("Welcome to SDFSD - NetSuite SuiteScript Deployer");
 
   });
 
-// Automated deployment command
-cli.command("deploy", "Deploy a SuiteScript to NetSuite")
-  .option("-f, --file <path:string>", "Path to the SuiteScript file")
-  .option("-e, --env <environment:string>", "Target NetSuite environment")
-  .action(async (options) => {
-    const { file, env } = options;
-    console.log(`Deploying ${file} to environment: ${env}`);
-    // Placeholder: Here, add the deployment logic
-    await deployScript(file, env);
-  });
+// // Automated deployment command
+// cli.command("deploy", "Deploy a SuiteScript to NetSuite")
+//   .option("-f, --file <path:string>", "Path to the SuiteScript file")
+//   .option("-e, --env <environment:string>", "Target NetSuite environment")
+//   .action(async (options) => {
+//     const { file, env } = options;
+//     console.log(`Deploying ${file} to environment: ${env}`);
+//     // Placeholder: Here, add the deployment logic
+//     await deployScript(file, env);
+//   });
 
 // XML generation command
 cli.command("create", "Generate XML for SuiteScript")
@@ -45,26 +40,28 @@ cli.command("create", "Generate XML for SuiteScript")
     await generateXml(output);
   });
 
-// Deployment wizard
-cli.command("wizard2", "Interactive wizard for SuiteScript deployment")
-  .action(async () => {
-    console.log("Starting deployment wizard...");
-    // Placeholder: Insert interactive wizard logic here
-    await runWizard();
-  });
+// // Deployment wizard
+// cli.command("wizard", "Interactive wizard for SuiteScript deployment")
+//   .action(async () => {
+//     console.log("Starting deployment wizard...");
+//     // Placeholder: Insert interactive wizard logic here
+//     await runWizard();
+//   });
 
 // Execute CLI
 cli.parse(Deno.args);
 
-// Mock functions (To be implemented )
-async function deployScript(file: string, env: string) {
-  console.log(`Deploying ${file} to ${env} (This is a mock function).`);
-}
+// // Mock functions (To be implemented )
+// async function deployScript(file: string, env: string) {
+//   console.log(`Deploying ${file} to ${env} (This is a mock function).`);
+// }
 
 async function generateXml(output: string) {
   console.log(`Generating XML at ${output} (This is a mock function).`);
+
+  await Promise.resolve(); // Placeholder for future async logic
 }
 
-async function runWizard() {
-  console.log("Running wizard (This is a mock function).");
-}
+// async function runWizard() {
+//   console.log("Running wizard (This is a mock function).");
+// }
