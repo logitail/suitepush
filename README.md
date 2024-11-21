@@ -39,7 +39,8 @@ With SuitePush, you can eliminate steps 2, 3, 4, and 5. Simply create your scrip
 
 1. **Run the CLI Script**
    ```sh
-   deno run --allow-read --allow-write --allow-net <path-to-suitepush-cli>.ts
+   deno install --allow-read --allow-write --allow-net -n suitepush https://github.com/logitail/suitepush/suitepush.ts
+
    ```
    
 2. **Follow the Wizard**
