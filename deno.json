@@ -1,6 +1,6 @@
 {
   "tasks": {
-    "dev": "denon run --watch --allow-read --allow-write sdfsd.ts"
+    "dev": "deno run --watch --allow-read --allow-net --allow-write sdfsd.ts"
   },
   "imports": {
     "@std/cli": "jsr:@std/cli@^1.0.6"
