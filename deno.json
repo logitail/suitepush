@@ -1,12 +1,12 @@
 {
   "tasks": {
-    "dev": "deno run --watch --allow-read --allow-net --allow-write sdfsd.ts"
+    "dev": "deno run --watch --allow-read --allow-net --allow-write suitepush.ts"
   },
   "imports": {
     "@std/cli": "jsr:@std/cli@^1.0.6"
   },
-  "name": "@logitail/sdfsd",
+  "name": "@logitail/suitepush",
   "version": "0.1.0",
-  "exports": "./sdfsd.ts",
+  "exports": "./suitepush.ts",
   "license": "MITdeno "
 }
