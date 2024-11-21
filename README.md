@@ -1,7 +1,7 @@
-# SDFSD CLI - NetSuite SuiteScript Deployer
+# SuitePush CLI - NetSuite SuiteScript Deployer
 
 ## Overview
-SDFSD is a Deno 2.0-based CLI tool designed to simplify the deployment of SuiteScripts to NetSuite environments. By bypassing the NetSuite UI, SDFSD automates the XML generation and deployment process for SuiteScript files directly to your NetSuite account. 
+SuitePush is a Deno 2.0-based CLI tool designed to simplify the deployment of SuiteScripts to NetSuite environments. By bypassing the NetSuite UI, SuitePush automates the XML generation and deployment process for SuiteScript files directly to your NetSuite account. 
 
 This tool is ideal for developers who want a streamlined approach to deploying scripts in a repeatable and efficient manner.
 
@@ -18,8 +18,8 @@ Ordinarily, deploying a SuiteScript involves the following steps:
 4. **Script Naming & Deployment:** Assign a name to the script and create a script deployment record.
 5. **Download Script Object:** Save or download the resulting XML object to complete deployment.
 
-## How SDFSD CLI Streamlines the Process
-With SDFSD, you can eliminate steps 2, 3, 4, and 5. Simply create your script file and run the CLI. The wizard will prompt you to select the type of SuiteScript, after which the tool handles the rest.
+## How SuitePush CLI Streamlines the Process
+With SuitePush, you can eliminate steps 2, 3, 4, and 5. Simply create your script file and run the CLI. The wizard will prompt you to select the type of SuiteScript, after which the tool handles the rest.
 
 ## Installation
 
@@ -28,18 +28,18 @@ With SDFSD, you can eliminate steps 2, 3, 4, and 5. Simply create your script fi
    curl -fsSL https://deno.land/install.sh | sh
    ```
 
-2. Clone the SDFSD repository or download the CLI script file.
+2. Clone the SuitePush repository or download the CLI script file.
 
 3. Run the script in your terminal:
    ```sh
-   deno run --allow-read --allow-write --allow-net <path-to-sdfsd-cli>.ts
+   deno run --allow-read --allow-write --allow-net <path-to-suitepush-cli>.ts
    ```
 
 ## Usage
 
 1. **Run the CLI Script**
    ```sh
-   deno run --allow-read --allow-write --allow-net <path-to-sdfsd-cli>.ts
+   deno run --allow-read --allow-write --allow-net <path-to-suitepush-cli>.ts
    ```
    
 2. **Follow the Wizard**
