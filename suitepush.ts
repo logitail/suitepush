@@ -2,7 +2,15 @@
 
 // Import necessary modules
 import { Command } from "jsr:@cliffy/command@^1.0.0-rc.7";
-import { existsSync } from "https://deno.land/std/fs/mod.ts";
+import {
+  Checkbox,
+  Confirm,
+  Input,
+  Number,
+  prompt,
+} from "jsr:@cliffy/prompt@^1.0.0-rc.7";
+import { cyan } from "@std/fmt/colors";
+import { existsSync } from "https://deno.land/std@0.224.0/fs/mod.ts";
 
 // // Function to fetch version from deno.json
 // async function getVersion(): Promise<string> {
@@ -15,26 +23,77 @@ import { existsSync } from "https://deno.land/std/fs/mod.ts";
 // // Get the version dynamically
 // const version = await getVersion();
 
-// Define a helper function to detect the script type
-function detectScriptType(scriptContent: string): string {
-  const match = scriptContent.match(/@NScriptType\s+(\w+)/);
-  if (match && match[1]) {
-    return match[1];
+// // Define a helper function to detect the script type
+// function detectScriptType(scriptContent: string): string {
+//   const match = scriptContent.match(/@NScriptType\s+(\w+)/);
+//   if (match && match[1]) {
+//     return match[1];
+//   }
+//   throw new Error("Script type not found in the JSDoc annotation.");
+// }
+
+// console.log(Deno.cwd());
+
+// Function to check SDF folder structure
+function checkSdfFolderStructure() {
+  const suiteConfigPath = `${Deno.cwd()}/suitecloud.config.js`;
+  if (!existsSync(suiteConfigPath)) {
+    console.warn(
+      `Warning: The current directory (${Deno.cwd()}) does not appear to be an SDF folder structure. Some operations may not work as expected.`,
+    );
+    Deno.exit(1);
   }
-  throw new Error("Script type not found in the JSDoc annotation.");
+  // else {
+  //   console.log(`SDF folder structure detected at: ${suiteConfigPath}`);
+  // }
 }
 
-// // Function to check SDF folder structure
-// function checkSdfFolderStructure() {
-//   const suiteConfigPath = `${Deno.cwd()}/suitecloud.config.js`;
-//   if (!existsSync(suiteConfigPath)) {
-//     console.warn(
-//       `Warning: The current directory (${Deno.cwd()}) does not appear to be an SDF folder structure. Some operations may not work as expected.`
-//     );
-//   } else {
-//     console.log(`SDF folder structure detected at: ${suiteConfigPath}`);
-//   }
-// }
+// Function to recursively get available scripts in the SuiteScripts folder
+async function getAvailableScripts(folderPath: string): Promise<string[]> {
+  const scripts: string[] = [];
+
+  if (!existsSync(folderPath)) {
+    console.warn(`Warning: The folder ${folderPath} does not exist.`);
+    return scripts;
+  }
+
+  for await (const dirEntry of Deno.readDir(folderPath)) {
+    const entryPath = `${folderPath}/${dirEntry.name}`;
+    if (
+      dirEntry.isFile &&
+      (dirEntry.name.endsWith(".js") || dirEntry.name.endsWith(".ts"))
+    ) {
+      scripts.push(entryPath);
+    } else if (dirEntry.isDirectory) {
+      // Recurse into subdirectories
+      const nestedScripts = await getAvailableScripts(entryPath);
+      scripts.push(...nestedScripts);
+    }
+  }
+
+  return scripts;
+}
+
+// Function to validate if the contents of the file have the required SuiteScript type notation
+async function validateSuiteScriptType(filePath: string) {
+  try {
+    const fileContent = await Deno.readTextFile(filePath);
+    const scriptTypeRegex = /@NScriptType\s+(\w+)/;
+
+    const match = fileContent.match(scriptTypeRegex);
+    if (match && match[1]) {
+      console.log(`Valid SuiteScript type found: ${match[1]}`);
+    } else {
+      console.error(
+        `Error: The selected file does not contain the required @NScriptType JSDoc annotation.`,
+      );
+      Deno.exit(1);
+    }
+  } catch (error) {
+    console.error(`Error reading the file: ${error.message}`);
+    Deno.exit(1);
+  }
+}
 
 // // Function to handle deployment
 // async function handleDeployment(scriptType: string) {
@@ -44,83 +103,127 @@ function detectScriptType(scriptContent: string): string {
 // }
 
 // Display options overview and setup CLI
-const suitepush = new Command()
-  .name("suitepush")
-  .version("0.1.1")
-  // .alias("v") // Alias -v to -V
-  // .versionOption(
-  //   " -v, --version",
-  //   "Print version info.",
-  //   function (this: Command) {
-  //     console.log("Version: %s", this.getVersion());
-  //   },
-  // )
-  .description("NetSuite SuiteScript Deployer")
-  .option("", "Show the CLI overview.", {
-    action: () => {
-      console.log(`
-      SuitePush CLI - NetSuite SuiteScript Deployer
-      ----------------------------------------------
-      SuitePush simplifies SuiteScript deployment by automating XML generation
-      and bypassing NetSuite's UI. For more details, visit the documentation.
-      `);
-      Deno.exit(0);
-    },
-  })
-  .arguments("[file:string]")
-  .action(async (_, file?: string) => {
-    if (!file) {
-      // console.log("Run with --overview to learn more, or provide a SuiteScript file.");
-      return;
+
+// const logLevelType = new EnumType(["debug", "info", "warn", "error"]);
+
+// Commands
+const createCommand = new Command()
+  .name("create")
+  .description("creating the xml file for deployment")
+  .action(async () => {
+    checkSdfFolderStructure();
+
+    // Get available script files from the SuiteScripts folder and its subfolders
+    const availableScripts = await getAvailableScripts(
+      "src/FileCabinet/SuiteScripts",
+    );
+
+    if (availableScripts.length === 0) {
+      console.warn(
+        "No scripts found in the src/FileCabinet/SuiteScripts/ directory.",
+      );
+      Deno.exit(1);
     }
 
-    try {
-      // Read the file
-      const content = await Deno.readTextFile(file);
+    // File selection prompt
+    const filePath = await Input.prompt({
+      message:
+        "Please provide the path to the SuiteScript file you want to use",
+      suggestions: availableScripts,
+    });
 
-      // Detect the script type
-      const scriptType = detectScriptType(content);
-      console.log(`Detected SuiteScript type: ${scriptType}`);
-    } catch (err) {
-      console.error("Error:", err.message);
+    // Validate if the file exists
+    if (!existsSync(filePath)) {
+      console.error(`Error: The specified file does not exist: ${filePath}`);
+      Deno.exit(1);
     }
+
+    console.log(`File selected: ${filePath}`);
+
+    // validate if the contents of the file has the jsdoc required suitescript type notation
+    await validateSuiteScriptType(filePath);
   });
 
-// Run the CLI
-suitepush.parse(Deno.args);
+// const deployCommand = new Command()
+//   .name("deploy")
+//   .description("Deploy a SuiteScript to NetSuite")
+//   .option("-f, --file <path:string>", "Path to the SuiteScript file")
+//   .action((options) => {
+//     if (!options.file) {
+//       console.error("Error: Please specify a file to deploy using the --file option.");
+//       Deno.exit(1);
+//     }
+//     console.log(`Deploying SuiteScript: ${options.file}`);
+//   });
 
-  
-  // .command("deploy", "Deploy a SuiteScript to NetSuite")
-  // .option("-t, --type <type:string>", "Type of SuiteScript to deploy")
-  // .action(({ type }) => {
-  //   if (!type) {
-  //     console.error("Error: You must specify a SuiteScript type using the --type option.");
-  //     Deno.exit(1);
-  //   }
-  //   checkSdfFolderStructure();
-  //   handleDeployment(type);
-  // })
-
-//   // CLI implementation
-// const suitepush = new Command()
-// .name("suitepush")
-// .description("Analyze and deploy SuiteScripts.")
-// .arguments("<file:string>")
-// .action(async (_, file: string) => {
-//   try {
-//     // Step 1: Read the file
-//     const content = await Deno.readTextFile(file);
-
-//     // Step 2: Detect script type
-//     const scriptType = detectScriptType(content);
-//     console.log(`Detected SuiteScript type: ${scriptType}`);
-
-//     // Step 3: Proceed with additional logic (e.g., XML generation)
-//     console.log("Further actions can be implemented here.");
-//   } catch (err) {
-//     console.error("Error:", err.message);
-//   }
+// const randomCommand = new Command()
+// .name("random")
+// .description("some random command")
+// .action(() => {
+//   const _color = Input.prompt({
+//     message: "Choose a color",
+//     list: true,
+//     info: true,
+//     suggestions: [
+//       "Abbey",
+//       "Absolute Zero",
+//       "Acadia",
+//       "Acapulco",
+//       "Acid Green",
+//       "Aero",
+//       "Aero Blue",
+//       "Affair",
+//       "African Violet",
+//       "Air Force Blue",
+//     ],
+//   });
+//   // console.log(color);
 // });
 
-// // Run the CLI
-// suitepush.parse(Deno.args);
+// const fileCommand = new Command()
+// .name("file")
+
+// .description("lorem ipsum")
+// .action(() => {
+//   // checkSdfFolderStructure()
+// });
+
+// console.log(result);
+
+// main
+await new Command()
+  .name("suitepush")
+  .version("0.0.1")
+  .versionOption(
+    " -v, --version",
+    "Print version info.",
+    function (this: Command) {
+      console.log("Version: %s", this.getVersion());
+    },
+  )
+  .description("A CLI tool for deploying SuiteScripts to NetSuite")
+  .example(
+    "general use: ",
+    `$suitepush [create] [option] (enter)\n\n
+    -> output: ${
+      cyan(
+        "Please provide the path to the SuiteScript file you want to use (press 'UP' to browse, or start to type the path/filename)",
+      )
+    }.`,
+  )
+  .action(() => {
+    // Default action when no subcommand is provided
+    console.log("Welcome to suitepush! Use --help to see available commands.");
+    checkSdfFolderStructure(); // Optional: Check structure if needed by default
+  })
+  // .type("log-level", logLevelType)
+  .command("create", createCommand)
+  // .command("deploy", deployCommand)
+  // .command("random", randomCommand)
+  // .command("file", fileCommand)
+
+  .option("-h, --help", "Show help information")
+  .option("-v, --version", "Show the version")
+  .option("-c, --config", "Manage configurations")
+  .option("-s, --setup", "Setup the tool")
+  .parse(Deno.args);
