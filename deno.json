@@ -1,12 +1,15 @@
 {
   "tasks": {
-    "dev": "denon run --watch --allow-read --allow-write sdfsd.ts"
+    "dev": "deno run --watch --allow-read --allow-net --allow-write .suitepush/suitepush.ts",
+    "test": "deno test --allow-read"
   },
   "imports": {
-    "@std/cli": "jsr:@std/cli@^1.0.6"
+    "@cliffy/command": "jsr:@cliffy/command@^1.0.0-rc.7",
+    "@std/cli": "jsr:@std/cli@^1.0.6",
+    "@std/fmt": "jsr:@std/fmt@^1.0.3"
   },
-  "name": "@logitail/sdfsd",
+  "name": "@logitail/suitepush",
   "version": "0.1.0",
-  "exports": "./sdfsd.ts",
-  "license": "MITdeno "
+  "exports": "./suitepush.ts",
+  "license": "MIT"
 }
