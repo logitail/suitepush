@@ -1,12 +1,13 @@
-function cs(
-  scriptName,
-  scriptDesc,
-  fileName,
-  filePath,
-  deployName,
-  recType,
-  scriptStatus
-) {
+// xml-templates.ts
+export function cs(
+  scriptName: string,
+  scriptDesc: string,
+  fileName: string,
+  filePath: string,
+  deployName: string,
+  recType: string,
+  scriptStatus: string
+): string {
   return `<clientscript scriptid="customscript_${scriptName}">
   <description>${scriptDesc}</description>
   <isinactive>F</isinactive>
@@ -24,7 +25,7 @@ function cs(
       <allroles>T</allroles>
       <audslctrole></audslctrole>
       <eventtype></eventtype>
-      <executioncontext>ACTION|ADVANCEDREVREC|BANKCONNECTIVITY|BANKSTATEMENTPARSER|BUNDLEINSTALLATION|CLIENT|CONSOLRATEADJUSTOR|CSVIMPORT|CUSTOMGLLINES|CUSTOMMASSUPDATE|DATASETBUILDER|DEBUGGER|EMAILCAPTURE|FICONNECTIVITY|FIPARSER|MAPREDUCE|OTHER|PAYMENTGATEWAY|PAYMENTPOSTBACK|PLATFORMEXTENSION|PORTLET|PROMOTIONS|RECORDACTION|RESTLET|RESTWEBSERVICES|SCHEDULED|SDFINSTALLATION|SHIPPINGPARTNERS|SUITELET|TAXCALCULATION|USEREVENT|USERINTERFACE|WEBSERVICES|WORKBOOKBUILDER|WORKFLOW</executioncontext>
+      <executioncontext>ACTION|CLIENT|SCHEDULED|USERINTERFACE|WORKFLOW</executioncontext>
       <isdeployed>T</isdeployed>
       <loglevel>ERROR</loglevel>
       <recordtype>${recType}</recordtype>
@@ -34,7 +35,14 @@ function cs(
 </clientscript>`;
 }
 
-function mr(scriptName, scriptDesc, fileName, filePath, deployName, dateToday) {
+export function mr(
+  scriptName: string,
+  scriptDesc: string,
+  fileName: string,
+  filePath: string,
+  deployName: string,
+  dateToday: string
+): string {
   return `<mapreducescript scriptid="customscript_${scriptName}">
   <description>${scriptDesc}</description>
   <isinactive>F</isinactive>
@@ -56,9 +64,7 @@ function mr(scriptName, scriptDesc, fileName, filePath, deployName, dateToday) {
       <yieldaftermins>60</yieldaftermins>
       <recurrence>
         <single>
-          <repeat></repeat>
           <startdate>${dateToday}</startdate>
-          <startdate>yyyy-mm-dd</startdate>
           <starttime>17:00:00Z</starttime>
         </single>
       </recurrence>
@@ -66,15 +72,16 @@ function mr(scriptName, scriptDesc, fileName, filePath, deployName, dateToday) {
   </scriptdeployments>
 </mapreducescript>`;
 }
-function ue(
-  scriptName,
-  scriptDesc,
-  fileName,
-  filePath,
-  deployName,
-  recType,
-  scriptStatus
-) {
+
+export function ue(
+  scriptName: string,
+  scriptDesc: string,
+  fileName: string,
+  filePath: string,
+  deployName: string,
+  recType: string,
+  scriptStatus: string
+): string {
   return `<usereventscript scriptid="customscript_${scriptName}">
   <description>${scriptDesc}</description>
   <isinactive>F</isinactive>
@@ -82,7 +89,7 @@ function ue(
   <notifyadmins>F</notifyadmins>
   <notifyemails></notifyemails>
   <notifyowner>F</notifyowner>
-  <notifyuser>F</notifyuser>cust
+  <notifyuser>F</notifyuser>
   <scriptfile>[${filePath}]</scriptfile>
   <scriptdeployments>
     <scriptdeployment scriptid="customdeploy_${deployName}">
@@ -92,7 +99,7 @@ function ue(
       <allroles>T</allroles>
       <audslctrole></audslctrole>
       <eventtype></eventtype>
-      <executioncontext>ACTION|ADVANCEDREVREC|BANKCONNECTIVITY|BANKSTATEMENTPARSER|BUNDLEINSTALLATION|CLIENT|CONSOLRATEADJUSTOR|CSVIMPORT|CUSTOMGLLINES|CUSTOMMASSUPDATE|DATASETBUILDER|DEBUGGER|EMAILCAPTURE|FICONNECTIVITY|FIPARSER|MAPREDUCE|OCRPLUGIN|OTHER|PAYMENTGATEWAY|PAYMENTPOSTBACK|PLATFORMEXTENSION|PORTLET|PROMOTIONS|RECORDACTION|RESTLET|RESTWEBSERVICES|SCHEDULED|SDFINSTALLATION|SHIPPINGPARTNERS|SUITELET|TAXCALCULATION|USEREVENT|USERINTERFACE|WEBSERVICES|WORKBOOKBUILDER|WORKFLOW</executioncontext>
+      <executioncontext>USEREVENT</executioncontext>
       <isdeployed>T</isdeployed>
       <loglevel>DEBUG</loglevel>
       <recordtype>${recType}</recordtype>
@@ -102,14 +109,15 @@ function ue(
   </scriptdeployments>
 </usereventscript>`;
 }
-function rl(
-  scriptName,
-  scriptDesc,
-  fileName,
-  filePath,
-  deployName,
-  scriptStatus
-) {
+
+export function rl(
+  scriptName: string,
+  scriptDesc: string,
+  fileName: string,
+  filePath: string,
+  deployName: string,
+  scriptStatus: string
+): string {
   return `<restlet scriptid="customscript_${scriptName}">
   <description>${scriptDesc}</description>
   <isinactive>F</isinactive>
@@ -133,45 +141,38 @@ function rl(
   </scriptdeployments>
 </restlet>`;
 }
-function sl(
-  scriptName,
-  scriptDesc,
-  fileName,
-  filePath,
-  deployName,
-  scriptStatus
-) {
+
+export function sl(
+  scriptName: string,
+  scriptDesc: string,
+  fileName: string,
+  filePath: string,
+  deployName: string,
+  scriptStatus: string
+): string {
   return `<suitelet scriptid="customscript_${scriptName}">
-    <description>${scriptDesc}</description>
-    <isinactive>F</isinactive>
-    <name>${fileName}</name>
-    <notifyadmins>F</notifyadmins>
-    <notifyemails></notifyemails>
-    <notifyowner>T</notifyowner>
-    <notifyuser>F</notifyuser>
-    <scriptfile>[${filePath}]</scriptfile>
-    <scriptdeployments>
-        <scriptdeployment scriptid="customdeploy_${deployName}">
-            <allemployees>F</allemployees>
-            <allpartners>F</allpartners>
-            <allroles>F</allroles>
-            <audslctrole></audslctrole>
-            <eventtype></eventtype>
-            <isdeployed>T</isdeployed>
-            <isonline>F</isonline>
-            <loglevel>DEBUG</loglevel>
-            <runasrole></runasrole>
-            <status>${scriptStatus}</status>
-            <title>${fileName}</title>
-        </scriptdeployment>
-    </scriptdeployments>
+  <description>${scriptDesc}</description>
+  <isinactive>F</isinactive>
+  <name>${fileName}</name>
+  <notifyadmins>F</notifyadmins>
+  <notifyemails></notifyemails>
+  <notifyowner>T</notifyowner>
+  <notifyuser>F</notifyuser>
+  <scriptfile>[${filePath}]</scriptfile>
+  <scriptdeployments>
+    <scriptdeployment scriptid="customdeploy_${deployName}">
+      <allemployees>F</allemployees>
+      <allpartners>F</allpartners>
+      <allroles>F</allroles>
+      <audslctrole></audslctrole>
+      <eventtype></eventtype>
+      <isdeployed>T</isdeployed>
+      <isonline>F</isonline>
+      <loglevel>DEBUG</loglevel>
+      <runasrole></runasrole>
+      <status>${scriptStatus}</status>
+      <title>${fileName}</title>
+    </scriptdeployment>
+  </scriptdeployments>
 </suitelet>`;
 }
-
-module.exports = {
-  cs,
-  mr,
-  ue,
-  rl,
-  sl
-};

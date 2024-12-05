@@ -1,7 +1,7 @@
 #!/usr/bin/env deno run --allow-read --allow-net --allow-write
 
 // Import necessary modules
-import { Command } from "jsr:@cliffy/command@^1.0.0-rc.7";
+import { Command } from "@cliffy/command";
 import {
   Checkbox,
   Confirm,
@@ -11,6 +11,10 @@ import {
 } from "jsr:@cliffy/prompt@^1.0.0-rc.7";
 import { cyan } from "@std/fmt/colors";
 import { existsSync } from "https://deno.land/std@0.224.0/fs/mod.ts";
+import { basename, extname } from "https://deno.land/std@0.224.0/path/mod.ts"; // For handling file paths
+import { join } from "https://deno.land/std@0.200.0/path/mod.ts";
+
+import { cs, mr, rl, sl, ue } from "./utils/xml/xml-templates.ts";
 
 // // Function to fetch version from deno.json
 // async function getVersion(): Promise<string> {
@@ -48,6 +52,28 @@ function checkSdfFolderStructure() {
   // }
 }
 
+async function xmlcreation(template: string, scriptname: string) {
+  const srcPath = join("src", "Objects");
+  // check if subfolder 'deploy' exist if not create folder
+
+  const deployPath = join(srcPath, "deploy");
+
+  // Create the "deploy" subfolder in the "src/Objects" folder
+  await Deno.mkdir(deployPath, { recursive: true });
+
+  // Generate a file in the "deploy" subfolder
+  let scriptName = scriptname; // if fileName has space turn into underscores
+  scriptName = scriptName.replace(/ /g, "_");
+  const filename = `customscript_${scriptName}.xml`;
+  // const fileContent = 'This file was deployed using Node.js fs module.';
+
+  // Write the XML template to the file in the "deploy" folder
+  const filePath = join(deployPath, filename);
+  await Deno.writeTextFile(filePath, template);
+
+  console.log(`The file "${filename}" was created in ${deployPath}`);
+}
+
 // Function to recursively get available scripts in the SuiteScripts folder
 async function getAvailableScripts(folderPath: string): Promise<string[]> {
   const scripts: string[] = [];
@@ -82,15 +108,16 @@ async function validateSuiteScriptType(filePath: string) {
 
     const match = fileContent.match(scriptTypeRegex);
     if (match && match[1]) {
-      console.log(`Valid SuiteScript type found: ${match[1]}`);
+      return match[1];
     } else {
       console.error(
         `Error: The selected file does not contain the required @NScriptType JSDoc annotation.`,
+        //TODO exit here?
       );
       Deno.exit(1);
     }
   } catch (error) {
-    console.error(`Error reading the file: ${error.message}`);
+    console.error(`Error reading the file: ${(error as Error).message}`);
     Deno.exit(1);
   }
 }
@@ -127,21 +154,61 @@ const createCommand = new Command()
 
     // File selection prompt
     const filePath = await Input.prompt({
-      message:
-        "Please provide the path to the SuiteScript file you want to use",
+      message: "Select the Suitescript",
       suggestions: availableScripts,
     });
-
     // Validate if the file exists
     if (!existsSync(filePath)) {
       console.error(`Error: The specified file does not exist: ${filePath}`);
       Deno.exit(1);
     }
+    // Extract the file name and remove the extension
+    const currentFileName = basename(filePath, extname(filePath));
 
-    console.log(`File selected: ${filePath}`);
+    // Prompt the user for script name suggestion
+    const scriptName = await Input.prompt({
+      message:
+        `Suggested script name: ${currentFileName}. Press Enter to accept or type a new one.`,
+      default: currentFileName,
+    });
+    // Step 3: Prompt for script description
+    const scriptDesc = await Input.prompt({
+      message: "Please provide a short description for the script",
+    });
+
+    // Use the provided script name, description, and file path to fill the template
+    const dateToday = new Date().toISOString().split("T")[0]; // Get today's date in 'YYYY-MM-DD' format
+    const deployName = scriptName.replace(/\s/g, "_");
+
+    // console.log(`File selected: ${filePath}`);
 
     // validate if the contents of the file has the jsdoc required suitescript type notation
-    await validateSuiteScriptType(filePath);
+    const output = await validateSuiteScriptType(filePath);
+    // console.log("🔧👩🏻‍💻 ~ .action ~ output:", output);
+
+    //create switch statement
+    switch (output) {
+      case "MapReduceScript":
+        // new prompting
+        const template = mr(
+          scriptName,
+          scriptDesc,
+          currentFileName,
+          filePath,
+          deployName,
+          dateToday,
+        );
+
+        xmlcreation(template, scriptName);
+        break;
+      case "UserEventScript":
+        // code block
+
+        break;
+      default:
+        // code block
+        console.log("No xml found for this type Suitescript");
+    }
   });
 
 // const deployCommand = new Command()
@@ -227,3 +294,5 @@ await new Command()
   .option("-c, --config", "Manage configurations")
   .option("-s, --setup", "Setup the tool")
   .parse(Deno.args);
+
+// END
