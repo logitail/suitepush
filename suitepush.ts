@@ -2,25 +2,15 @@
 
 // Import necessary modules
 import { Command } from "@cliffy/command";
-import {
-  Checkbox,
-  Confirm,
-  Input,
-  Number,
-  prompt,
-} from "jsr:@cliffy/prompt@^1.0.0-rc.7";
+import { Checkbox, Confirm, Input, Number, prompt } from "jsr:@cliffy/prompt@^1.0.0-rc.7";
 import { cyan } from "@std/fmt/colors";
 import { existsSync } from "https://deno.land/std@0.224.0/fs/mod.ts";
-import {
-  basename,
-  extname,
-  join,
-} from "https://deno.land/std@0.224.0/path/mod.ts"; // For handling file paths
+import { basename, extname, join } from "https://deno.land/std@0.224.0/path/mod.ts"; // For handling file paths
 import { cs, mr, rl, sl, ue } from "./utils/xml/xml-templates.ts";
 
-// // Function to fetch version from deno.json
+// Function to fetch version from deno.json
 // async function getVersion(): Promise<string> {
-//   const configPath = "deno.json"; // Use relative path
+//   const configPath = "./deno.json"; // Use relative path
 //   const config = await Deno.readTextFile(configPath);
 //   const parsedConfig = JSON.parse(config);
 //   return parsedConfig.version || "unknown";
@@ -190,7 +180,7 @@ const createCommand = new Command()
 
     //create switch statement
     switch (output) {
-      case "MapReduceScript":
+      case "MapReduceScript": {
         // new prompting
         const template = mr(
           scriptName,
@@ -203,6 +193,7 @@ const createCommand = new Command()
 
         xmlcreation(template, scriptName);
         break;
+      }
       case "UserEventScript":
         // code block
 
@@ -262,7 +253,7 @@ const createCommand = new Command()
 // main
 await new Command()
   .name("suitepush")
-  .version("0.0.1")
+  .version("0.1.0")
   .versionOption(
     " -v, --version",
     "Print version info.",

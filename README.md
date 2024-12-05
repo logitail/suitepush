@@ -1,82 +1,106 @@
-# SuitePush CLI - NetSuite SuiteScript Deployer
+
+# SuitePush Project
 
 ## Overview
-SuitePush is a Deno 2.0-based CLI tool designed to simplify the deployment of SuiteScripts to NetSuite environments. By bypassing the NetSuite UI, SuitePush automates the XML generation and deployment process for SuiteScript files directly to your NetSuite account. 
-
-This tool is ideal for developers who want a streamlined approach to deploying scripts in a repeatable and efficient manner.
+SuitePush is a Deno-based tool designed for generating and managing NetSuite script deployment XML files.
+It leverages the power of Deno's modern ecosystem, along with user-defined templates, to streamline development for NetSuite scripts like MapReduce, Client Scripts, User Event Scripts, Suitelets, and more.
 
 ## Features
-- **Automated Deployment:** Automatically deploy SuiteScripts without the need to interact with NetSuite's UI.
-- **XML Generation:** Generates required XML objects for SuiteScripts, handling NetSuite-specific structure automatically.
-- **Deployment Wizard:** A guided wizard helps users select the type of SuiteScript to deploy, allowing quick customization.
+- Supports various NetSuite script types:
+  - **Client Scripts**
+  - **MapReduce Scripts**
+  - **User Event Scripts**
+  - **Restlets**
+  - **Suitelets**
+- Modular and extensible templates with the `xml-templates.ts` file.
+- Built using TypeScript for type safety and modern JavaScript features.
+- Easy to extend for custom user inputs or additional functionality.
 
-## Traditional Deployment Steps
-Ordinarily, deploying a SuiteScript involves the following steps:
-1. **Create the SuiteScript:** Develop and test the SuiteScript file.
-2. **Upload the Script:** Manually upload the file to NetSuite's File Cabinet.
-3. **Customization Setup:** Navigate to *Customization > Scripting > Scripts > New* in NetSuite.
-4. **Script Naming & Deployment:** Assign a name to the script and create a script deployment record.
-5. **Download Script Object:** Save or download the resulting XML object to complete deployment.
+## Files
+### 1. `suitepush.ts`
+This is the main entry point for the project. It handles the logic for generating deployment XML files and integrates with the templates provided in `xml-templates.ts`.
 
-## How SuitePush CLI Streamlines the Process
-With SuitePush, you can eliminate steps 2, 3, 4, and 5. Simply create your script file and run the CLI. The wizard will prompt you to select the type of SuiteScript, after which the tool handles the rest.
+Key highlights from `suitepush.ts`:
+```typescript
+#!/usr/bin/env deno run --allow-read --allow-net --allow-write
 
-## Installation
+// Import necessary modules
+import { Command } from "@cliffy/command";
+import {
+  Checkbox,
+  Confirm,
+  Input,
+  Number,
+  prompt,
+} from "jsr:@cliffy/prompt@^1.0.0-rc.7";
+import { cyan } from "@std/fmt/colors";
+import { existsSync } from "https://deno.land/std@0.224.0/fs/mod.ts";
+import {
+  basename,
+  extname,
+  join,
+} from "https://deno.land/std@0.224.0/path/mod.ts"; // For handling file paths
+import { cs, mr, rl, sl, ue } from  // Show the first 500 characters as a preview
+...
+```
 
-1. Ensure you have **Deno 2.0** installed. To install Deno, you can use the following command:
-   ```sh
-   curl -fsSL https://deno.land/install.sh | sh
+### 2. `xml-templates.ts`
+This file contains modular templates for various NetSuite script types. You can use these templates directly or customize them for your specific requirements.
+
+Key highlights from `xml-templates.ts`:
+```typescript
+// xml-templates.ts
+export function cs(
+  scriptName: string,
+  scriptDesc: string,
+  fileName: string,
+  filePath: string,
+  deployName: string,
+  recType: string,
+  scriptStatus: string
+): string {
+  return `<clientscript scriptid="customscript_${scriptName}">
+  <description>${scriptDesc}</description>
+  <isinactive>F</isinactive>
+  <name>${fileName}</name>
+  <notifyadmins>F</notifyadmins>
+  <notifyemails></notifyemails>
+  <notifyowner>F</notifyowner>
+  <notifyuser>F</notifyuser>
+  <scriptfile  // Show the first 500 characters as a preview
+...
+```
+
+## Getting Started
+### Prerequisites
+- Install Deno: [Deno Installation Guide](https://deno.land/manual@v1.36.0/getting_started/installation)
+- Grant file system permissions when running the scripts:
+  ```bash
+  deno run --allow-read --allow-write suitepush.ts
+  ```
+
+### Usage
+1. Clone this repository:
+   ```bash
+   git clone <repository_url>
+   cd suitepush
    ```
 
-2. Clone the SuitePush repository or download the CLI script file.
-
-3. Run the script in your terminal:
-   ```sh
-   deno run --allow-read --allow-write --allow-net <path-to-suitepush-cli>.ts
+2. Run the main script to generate XML files:
+   ```bash
+   deno run --allow-read --allow-write suitepush.ts
    ```
 
-## Usage
+3. Customize the templates by editing `xml-templates.ts`.
 
-1. **Run the CLI Script**
-   ```sh
-   deno install --allow-read --allow-write --allow-net -n suitepush https://github.com/logitail/suitepush/suitepush.ts
+## Version
 
-   ```
-   
-2. **Follow the Wizard**
-   - The CLI will prompt you to select the type of SuiteScript you want to deploy (e.g., `User Event`, `Scheduled`, `Map/Reduce`).
-   - Based on your selections, it will generate the appropriate XML object and handle deployment to your NetSuite environment.
+v0.1.0
+- [x] add MapReduce as the first SuiteScript type
 
-3. **Deployment Complete**
-   - Once complete, your script will be deployed without needing manual steps within NetSuite.
-
-## Permissions
-The CLI requires the following Deno permissions:
-- `--allow-read` to access script files.
-- `--allow-write` to create XML objects.
-- `--allow-net` to communicate with the NetSuite environment.
-
-## Prerequisites
-- Deno 2.0 installed on your system.
-- Sufficient permissions in your NetSuite environment to deploy SuiteScripts.
-
-## Troubleshooting
-If you encounter issues:
-1. Ensure the script file is accessible and has the correct file permissions.
-2. Check your network permissions and connectivity with NetSuite.
 
 ## Contributing
-Contributions are welcome! Please fork the repository and submit a pull request if you have ideas for new features or improvements.
+Feel free to fork this repository, add new features, or improve existing functionality. Contributions are always welcome!
 
 ## License
-This project is licensed under the MIT License. See the `LICENSE` file for more information.
-
-## Versioning
-
-v0.1.1 layout requirement
-- [ ] determination of current sdf folder has a suiteconfig.js file
-- [ ]  
-
-v0.1.0 setup deno and github actions for publishing
-- [ ] publish with stable jsr package of cliffy '@cliffy/command'
-- [x] boilerplate code
+This project is licensed under the MIT License.
