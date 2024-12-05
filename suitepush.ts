@@ -11,9 +11,11 @@ import {
 } from "jsr:@cliffy/prompt@^1.0.0-rc.7";
 import { cyan } from "@std/fmt/colors";
 import { existsSync } from "https://deno.land/std@0.224.0/fs/mod.ts";
-import { basename, extname } from "https://deno.land/std@0.224.0/path/mod.ts"; // For handling file paths
-import { join } from "https://deno.land/std@0.200.0/path/mod.ts";
-
+import {
+  basename,
+  extname,
+  join,
+} from "https://deno.land/std@0.224.0/path/mod.ts"; // For handling file paths
 import { cs, mr, rl, sl, ue } from "./utils/xml/xml-templates.ts";
 
 // // Function to fetch version from deno.json
