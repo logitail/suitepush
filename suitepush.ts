@@ -2,11 +2,11 @@
 
 // Import necessary modules
 import { Command } from "@cliffy/command";
-import { Checkbox, Confirm, Input, Number, prompt } from "jsr:@cliffy/prompt@^1.0.0-rc.7";
+import { Input } from "jsr:@cliffy/prompt@^1.0.0-rc.7"; //Checkbox,Number, prompt,Confirm,
 import { cyan } from "@std/fmt/colors";
-import { existsSync } from "https://deno.land/std@0.224.0/fs/mod.ts";
-import { basename, extname, join } from "https://deno.land/std@0.224.0/path/mod.ts"; // For handling file paths
-import { cs, mr, rl, sl, ue } from "./utils/xml/xml-templates.ts";
+import { existsSync } from "@std/fs";
+import { basename, extname, join } from "@std/path"; // For handling file paths
+import { mr, rl, sl } from "./utils/xml/xml-templates.ts"; // sl, ue, cs,
 
 // Function to fetch version from deno.json
 // async function getVersion(): Promise<string> {
@@ -18,15 +18,6 @@ import { cs, mr, rl, sl, ue } from "./utils/xml/xml-templates.ts";
 
 // // Get the version dynamically
 // const version = await getVersion();
-
-// // Define a helper function to detect the script type
-// function detectScriptType(scriptContent: string): string {
-//   const match = scriptContent.match(/@NScriptType\s+(\w+)/);
-//   if (match && match[1]) {
-//     return match[1];
-//   }
-//   throw new Error("Script type not found in the JSDoc annotation.");
-// }
 
 // console.log(Deno.cwd());
 
@@ -48,7 +39,7 @@ async function xmlcreation(template: string, scriptname: string) {
   const srcPath = join("src", "Objects");
   // check if subfolder 'deploy' exist if not create folder
 
-  const deployPath = join(srcPath, "deploy");
+  const deployPath = srcPath; //join(srcPath, "deploy");
 
   // Create the "deploy" subfolder in the "src/Objects" folder
   await Deno.mkdir(deployPath, { recursive: true });
@@ -177,6 +168,10 @@ const createCommand = new Command()
     // validate if the contents of the file has the jsdoc required suitescript type notation
     const output = await validateSuiteScriptType(filePath);
     // console.log("🔧👩🏻‍💻 ~ .action ~ output:", output);
+    // Remove the first two folders
+    const updatedPath = "/" + filePath.split("/").slice(2).join("/");
+
+    const scriptStatus = "RELEASED";
 
     //create switch statement
     switch (output) {
@@ -186,7 +181,7 @@ const createCommand = new Command()
           scriptName,
           scriptDesc,
           currentFileName,
-          filePath,
+          updatedPath,
           deployName,
           dateToday,
         );
@@ -194,10 +189,50 @@ const createCommand = new Command()
         xmlcreation(template, scriptName);
         break;
       }
-      case "UserEventScript":
-        // code block
+      case "Suitelet": {
+        // new prompting
+        const template = sl(
+          scriptName,
+          scriptDesc,
+          currentFileName,
+          updatedPath,
+          deployName,
+          scriptStatus,
+        );
 
+        xmlcreation(template, scriptName);
         break;
+      }
+      case "Restlet": {
+        // new prompting
+        const template = rl(
+          scriptName,
+          scriptDesc,
+          currentFileName,
+          updatedPath,
+          deployName,
+          scriptStatus,
+        );
+
+        xmlcreation(template, scriptName);
+        break;
+      }
+      //TODO create the rectyple list and scriptstatus
+      // case "UserEventScript": {
+      //   const template = ue(
+      //     scriptName,
+      //     scriptDesc,
+      //     currentFileName,
+      //     updatedPath,
+      //     deployName,
+      //     recType,
+      //     scriptStatus,
+      //   );
+
+      //   xmlcreation(template, scriptName);
+      //   break;
+      // }
+
       default:
         // code block
         console.log("No xml found for this type Suitescript");
@@ -261,15 +296,17 @@ await new Command()
       console.log("Version: %s", this.getVersion());
     },
   )
-  .description("A CLI tool for deploying SuiteScripts to NetSuite")
+  .description(
+    "A CLI tool for creating SDF objects and deploying SuiteScripts to NetSuite",
+  )
   .example(
     "general use: ",
-    `$suitepush [create] [option] (enter)\n\n
-    -> output: ${
+    `$suitepush [command] [option] (enter)
+  ${
       cyan(
-        "Please provide the path to the SuiteScript file you want to use (press 'UP' to browse, or start to type the path/filename)",
+        "Please provide the path to the SuiteScript file you want to use (press 'UP' to browse, or start to type the path/filename).",
       )
-    }.`,
+    }`,
   )
   .action(() => {
     // Default action when no subcommand is provided

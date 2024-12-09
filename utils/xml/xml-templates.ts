@@ -1,4 +1,7 @@
 // xml-templates.ts
+
+type ScriptStatus = "TESTING" | "RELEASED";
+
 export function cs(
   scriptName: string,
   scriptDesc: string,
@@ -6,7 +9,7 @@ export function cs(
   filePath: string,
   deployName: string,
   recType: string,
-  scriptStatus: string
+  scriptStatus: string,
 ): string {
   return `<clientscript scriptid="customscript_${scriptName}">
   <description>${scriptDesc}</description>
@@ -41,7 +44,7 @@ export function mr(
   fileName: string,
   filePath: string,
   deployName: string,
-  dateToday: string
+  dateToday: string,
 ): string {
   return `<mapreducescript scriptid="customscript_${scriptName}">
   <description>${scriptDesc}</description>
@@ -80,7 +83,7 @@ export function ue(
   filePath: string,
   deployName: string,
   recType: string,
-  scriptStatus: string
+  scriptStatus: ScriptStatus,
 ): string {
   return `<usereventscript scriptid="customscript_${scriptName}">
   <description>${scriptDesc}</description>
@@ -116,7 +119,7 @@ export function rl(
   fileName: string,
   filePath: string,
   deployName: string,
-  scriptStatus: string
+  scriptStatus: string,
 ): string {
   return `<restlet scriptid="customscript_${scriptName}">
   <description>${scriptDesc}</description>
@@ -148,7 +151,7 @@ export function sl(
   fileName: string,
   filePath: string,
   deployName: string,
-  scriptStatus: string
+  scriptStatus: string,
 ): string {
   return `<suitelet scriptid="customscript_${scriptName}">
   <description>${scriptDesc}</description>
