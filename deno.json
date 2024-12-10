@@ -1,7 +1,7 @@
 {
   "tasks": {
-    "dev": "deno run --watch --allow-read --allow-net --allow-write .suitepush/suitepush.ts",
-    "test": "deno test --allow-read"
+    "dev": "deno run --watch --allow-read --allow-net --allow-write /Users/Philip/code/logitail/suitepush/suitepush.ts",
+    "test": "deno test --allow-read --watch"
   },
   "imports": {
     "@cliffy/command": "jsr:@cliffy/command@^1.0.0-rc.7",
@@ -12,7 +12,7 @@
     "@std/path": "jsr:@std/path@^1.0.8"
   },
   "name": "@logitail/suitepush",
-  "version": "0.1.0",
+  "version": "0.1.2",
   "exports": "./suitepush.ts",
   "license": "MIT"
 }
