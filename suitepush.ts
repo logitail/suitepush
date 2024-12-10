@@ -2,7 +2,7 @@
 
 // Import necessary modules
 import { Command } from "@cliffy/command";
-import { Input } from "jsr:@cliffy/prompt@^1.0.0-rc.7"; //Checkbox,Number, prompt,Confirm,
+import { Confirm, Input } from "jsr:@cliffy/prompt@^1.0.0-rc.7"; //Checkbox,Number, prompt,Confirm,
 import { cyan } from "@std/fmt/colors";
 import { existsSync } from "@std/fs";
 import { basename, extname, join } from "@std/path"; // For handling file paths
@@ -21,6 +21,19 @@ import { mr, rl, sl } from "./utils/xml/xml-templates.ts"; // sl, ue, cs,
 
 // console.log(Deno.cwd());
 
+const getErrorMessage = (error: unknown): string => {
+  let message: string;
+  if (error instanceof Error) {
+    return error.message;
+  } else if (error && typeof error === "object" && "message" in error) {
+    return message = String(error.message);
+  } else if (typeof error === "string") {
+    return message = error;
+  } else {
+    message = "Something went wrong";
+    return message;
+  }
+};
 // Function to check SDF folder structure
 function checkSdfFolderStructure() {
   const suiteConfigPath = `${Deno.cwd()}/suitecloud.config.js`;
@@ -87,20 +100,54 @@ async function getAvailableScripts(folderPath: string): Promise<string[]> {
 async function validateSuiteScriptType(filePath: string) {
   try {
     const fileContent = await Deno.readTextFile(filePath);
-    const scriptTypeRegex = /@NScriptType\s+(\w+)/;
 
-    const match = fileContent.match(scriptTypeRegex);
-    if (match && match[1]) {
-      return match[1];
+    // Regex for @NScriptType
+    const scriptTypeRegex = /@NScriptType\s+(\w+)/;
+    const scriptTypeMatch = fileContent.match(scriptTypeRegex);
+
+    // Regex for @description
+    const descriptionRegex = /(?<=@description\s)((.|\n)*?)(?=\n\s*\*\/)/;
+    const descriptionMatch = fileContent.match(descriptionRegex);
+
+    if (scriptTypeMatch && scriptTypeMatch[1]) {
+      const scriptType = scriptTypeMatch[1];
+      let description = descriptionMatch ? descriptionMatch[1] : null;
+
+      if (description) {
+        // Step 3: Ask the user if they want to use the found description or create a new one
+        // Show only the first 30 characters of the description, followed by '...'
+        const preview = description.length > 30
+          ? `${description.slice(0, 40)}...`
+          : description;
+
+        const useExistingDescription = await Confirm.prompt({
+          message:
+            `A description was found: "${preview}". Do you want to use it?`,
+        });
+
+        if (!useExistingDescription) {
+          // Prompt the user to create a new description
+          description = await Input.prompt({
+            message: "Provide a new description for the script:",
+          });
+        }
+      } else {
+        // No description found, prompt the user to provide one
+        description = await Input.prompt({
+          message:
+            "No description found. Please provide a description for the script:",
+        });
+      }
+
+      return { scriptType, description };
     } else {
       console.error(
         `Error: The selected file does not contain the required @NScriptType JSDoc annotation.`,
-        //TODO exit here?
       );
       Deno.exit(1);
     }
-  } catch (error) {
-    console.error(`Error reading the file: ${(error as Error).message}`);
+  } catch (error: unknown) {
+    console.error(`Error reading file: ${getErrorMessage(error)}`);
     Deno.exit(1);
   }
 }
@@ -154,10 +201,15 @@ const createCommand = new Command()
         `Suggested script name: ${currentFileName}. Press Enter to accept or type a new one.`,
       default: currentFileName,
     });
-    // Step 3: Prompt for script description
-    const scriptDesc = await Input.prompt({
-      message: "Please provide a short description for the script",
-    });
+
+    // validate if the contents of the file has the jsdoc required suitescript type notation
+    const { scriptType, description } = await validateSuiteScriptType(filePath);
+    // console.log("🔧👩🏻‍💻 ~ .action ~ output:", output);
+
+    // // Step 3: Prompt for script description
+    // const scriptDesc = await Input.prompt({
+    //   message: "Please provide a short description for the script",
+    // });
 
     // Use the provided script name, description, and file path to fill the template
     const dateToday = new Date().toISOString().split("T")[0]; // Get today's date in 'YYYY-MM-DD' format
@@ -165,21 +217,18 @@ const createCommand = new Command()
 
     // console.log(`File selected: ${filePath}`);
 
-    // validate if the contents of the file has the jsdoc required suitescript type notation
-    const output = await validateSuiteScriptType(filePath);
-    // console.log("🔧👩🏻‍💻 ~ .action ~ output:", output);
     // Remove the first two folders
     const updatedPath = "/" + filePath.split("/").slice(2).join("/");
 
     const scriptStatus = "RELEASED";
 
     //create switch statement
-    switch (output) {
+    switch (scriptType) {
       case "MapReduceScript": {
         // new prompting
         const template = mr(
           scriptName,
-          scriptDesc,
+          description,
           currentFileName,
           updatedPath,
           deployName,
@@ -193,7 +242,7 @@ const createCommand = new Command()
         // new prompting
         const template = sl(
           scriptName,
-          scriptDesc,
+          description,
           currentFileName,
           updatedPath,
           deployName,
@@ -207,7 +256,7 @@ const createCommand = new Command()
         // new prompting
         const template = rl(
           scriptName,
-          scriptDesc,
+          description,
           currentFileName,
           updatedPath,
           deployName,
@@ -221,7 +270,7 @@ const createCommand = new Command()
       // case "UserEventScript": {
       //   const template = ue(
       //     scriptName,
-      //     scriptDesc,
+      //     description,
       //     currentFileName,
       //     updatedPath,
       //     deployName,

@@ -4,7 +4,7 @@ type ScriptStatus = "TESTING" | "RELEASED";
 
 export function cs(
   scriptName: string,
-  scriptDesc: string,
+  scriptDesc: string | null,
   fileName: string,
   filePath: string,
   deployName: string,
@@ -40,7 +40,7 @@ export function cs(
 
 export function mr(
   scriptName: string,
-  scriptDesc: string,
+  scriptDesc: string | null,
   fileName: string,
   filePath: string,
   deployName: string,
@@ -78,7 +78,7 @@ export function mr(
 
 export function ue(
   scriptName: string,
-  scriptDesc: string,
+  scriptDesc: string | null,
   fileName: string,
   filePath: string,
   deployName: string,
@@ -115,7 +115,7 @@ export function ue(
 
 export function rl(
   scriptName: string,
-  scriptDesc: string,
+  scriptDesc: string | null,
   fileName: string,
   filePath: string,
   deployName: string,
@@ -147,7 +147,7 @@ export function rl(
 
 export function sl(
   scriptName: string,
-  scriptDesc: string,
+  scriptDesc: string | null,
   fileName: string,
   filePath: string,
   deployName: string,
