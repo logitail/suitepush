@@ -2,11 +2,12 @@
 
 // Import necessary modules
 import { Command } from "@cliffy/command";
-import { Confirm, Input } from "jsr:@cliffy/prompt@^1.0.0-rc.7"; //Checkbox,Number, prompt,Confirm,
+import { Confirm, Input } from "jsr:@cliffy/prompt@^1.0.0-rc.7"; //Checkbox, Number, prompt, Confirm,
 import { cyan } from "@std/fmt/colors";
 import { existsSync } from "@std/fs";
 import { basename, extname, join } from "@std/path"; // For handling file paths
-import { mr, rl, sl } from "./utils/xml/xml-templates.ts"; // sl, ue, cs,
+import { cs, mr, rl, sl, ue } from "./utils/xml/xml-templates.ts";
+import recordslist from "./utils/recordslist.json" with { type: "json" };
 
 // Function to fetch version from deno.json
 // async function getVersion(): Promise<string> {
@@ -106,7 +107,7 @@ async function validateSuiteScriptType(filePath: string) {
     const scriptTypeMatch = fileContent.match(scriptTypeRegex);
 
     // Regex for @description
-    const descriptionRegex = /(?<=@description\s)((.|\n)*?)(?=\n\s*\*\/)/;
+    const descriptionRegex = /@description\s+(.+?)(?=\n|$)/;
     const descriptionMatch = fileContent.match(descriptionRegex);
 
     if (scriptTypeMatch && scriptTypeMatch[1]) {
@@ -152,17 +153,6 @@ async function validateSuiteScriptType(filePath: string) {
   }
 }
 
-// // Function to handle deployment
-// async function handleDeployment(scriptType: string) {
-//   console.log(`Deploying SuiteScript of type: ${scriptType}`);
-//   // TODO: Add XML generation logic here
-//   // TODO: Integrate NetSuite deployment logic here
-// }
-
-// Display options overview and setup CLI
-
-// const logLevelType = new EnumType(["debug", "info", "warn", "error"]);
-
 // Commands
 const createCommand = new Command()
   .name("create")
@@ -206,10 +196,23 @@ const createCommand = new Command()
     const { scriptType, description } = await validateSuiteScriptType(filePath);
     // console.log("🔧👩🏻‍💻 ~ .action ~ output:", output);
 
-    // // Step 3: Prompt for script description
-    // const scriptDesc = await Input.prompt({
-    //   message: "Please provide a short description for the script",
-    // });
+    // Record type is mandatory for specific script types
+    let recType: string | null = null;
+    if (scriptType === "UserEventScript" || scriptType === "ClientScript") {
+      recType = await Input.prompt({
+        message: "Select the record",
+        suggestions: recordslist.records,
+      });
+
+      // Ensure recType is not null or undefined
+      if (!recType) {
+        console.error("Record type is required for this script type.");
+        Deno.exit(1);
+      }
+    }
+
+    // Example usage
+    // const scriptType = "ue"; // Modify as needed
 
     // Use the provided script name, description, and file path to fill the template
     const dateToday = new Date().toISOString().split("T")[0]; // Get today's date in 'YYYY-MM-DD' format
@@ -266,21 +269,34 @@ const createCommand = new Command()
         xmlcreation(template, scriptName);
         break;
       }
-      //TODO create the rectyple list and scriptstatus
-      // case "UserEventScript": {
-      //   const template = ue(
-      //     scriptName,
-      //     description,
-      //     currentFileName,
-      //     updatedPath,
-      //     deployName,
-      //     recType,
-      //     scriptStatus,
-      //   );
+      case "UserEventScript": {
+        const template = ue(
+          scriptName,
+          description,
+          currentFileName,
+          updatedPath,
+          deployName,
+          recType as string,
+          scriptStatus,
+        );
 
-      //   xmlcreation(template, scriptName);
-      //   break;
-      // }
+        xmlcreation(template, scriptName);
+        break;
+      }
+      case "ClientScript": {
+        const template = cs(
+          scriptName,
+          description,
+          currentFileName,
+          updatedPath,
+          deployName,
+          recType as string,
+          scriptStatus,
+        );
+
+        xmlcreation(template, scriptName);
+        break;
+      }
 
       default:
         // code block
@@ -337,7 +353,7 @@ const createCommand = new Command()
 // main
 await new Command()
   .name("suitepush")
-  .version("0.1.0")
+  .version("0.1.2")
   .versionOption(
     " -v, --version",
     "Print version info.",

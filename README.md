@@ -95,6 +95,10 @@ export function cs(
 
 ## Version
 
+v0.1.2 Script types added 
+- [x] added restlet, suitelet, userevent, clientscript scripttype
+- [x] when the script has a description use to in the (deployment) object
+  
 v0.1.0
 - [x] add MapReduce as the first SuiteScript type
 
