@@ -1,7 +1,8 @@
 
 # SuitePush Project
 
-[![Publish](https://github.com/logitail/suitepush/actions/workflows/publish.yml/badge.svg)](https://github.com/logitail/suitepush/actions/workflows/publish.yml)
+[![Publish](https://github.com/logitail/suitepush/actions/workflows/publish.yml/badge.svg)](https://github.com/logitail/suitepush/actions/workflows/publish.yml) ![GitHub Tag](https://img.shields.io/github/v/tag/logitail/suitepush?label=Version&link=https%3A%2F%2Fgithub.com%2Flogitail%2Fsuitepush%2F)
+
 
 ## Overview
 SuitePush is a Deno-based tool designed for generating and managing NetSuite script deployment XML files.
