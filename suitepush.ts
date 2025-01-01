@@ -6,7 +6,7 @@ import { Confirm, Input } from "jsr:@cliffy/prompt@^1.0.0-rc.7"; //Checkbox, Num
 import { cyan } from "@std/fmt/colors";
 import { existsSync } from "@std/fs";
 import { basename, extname, join } from "@std/path"; // For handling file paths
-import { cs, mr, rl, sl, ue } from "./utils/xml/xml-templates.ts";
+import { cs, mr, rl, sl, ss, ue } from "./utils/xml/xml-templates.ts";
 import recordslist from "./utils/recordslist.json" with { type: "json" };
 
 // Function to fetch version from deno.json
@@ -174,7 +174,8 @@ const createCommand = new Command()
 
     // File selection prompt
     const filePath = await Input.prompt({
-      message: "Select the Suitescript",
+      message:
+        "Select the Suitescript (Use arrow key ↑ or type to search starting from the root)",
       suggestions: availableScripts,
     });
     // Validate if the file exists
@@ -291,6 +292,20 @@ const createCommand = new Command()
           updatedPath,
           deployName,
           recType as string,
+          scriptStatus,
+        );
+
+        xmlcreation(template, scriptName);
+        break;
+      }
+
+      case "ScheduledScript": {
+        const template = ss(
+          scriptName,
+          description,
+          currentFileName,
+          updatedPath,
+          deployName,
           scriptStatus,
         );
 

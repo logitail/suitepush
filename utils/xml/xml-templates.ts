@@ -179,3 +179,31 @@ export function sl(
   </scriptdeployments>
 </suitelet>`;
 }
+
+export function ss(
+  scriptName: string,
+  scriptDesc: string | null,
+  fileName: string,
+  filePath: string,
+  deployName: string,
+  scriptStatus: string,
+): string {
+  return `<scheduledscript scriptid="customscript_${scriptName}">
+  <description>${scriptDesc || ""}</description>
+  <isinactive>F</isinactive>
+  <name>${fileName}</name>
+  <notifyadmins>F</notifyadmins>
+  <notifyemails></notifyemails>
+  <notifyowner>F</notifyowner>
+  <scriptfile>[${filePath}]</scriptfile>
+  <scriptdeployments>
+    <scriptdeployment scriptid="customdeploy_${deployName}">
+      <allroles>T</allroles>
+      <isdeployed>T</isdeployed>
+      <loglevel>DEBUG</loglevel>
+      <status>${scriptStatus}</status>
+      <executioncontext>SCHEDULED</executioncontext>
+    </scriptdeployment>
+  </scriptdeployments>
+</scheduledscript>`;
+}
