@@ -306,7 +306,6 @@ const createCommand = new Command()
           currentFileName,
           updatedPath,
           deployName,
-          scriptStatus,
         );
 
         xmlcreation(template, scriptName);

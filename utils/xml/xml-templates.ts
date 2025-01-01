@@ -186,7 +186,6 @@ export function ss(
   fileName: string,
   filePath: string,
   deployName: string,
-  scriptStatus: string,
 ): string {
   return `<scheduledscript scriptid="customscript_${scriptName}">
   <description>${scriptDesc || ""}</description>
@@ -198,12 +197,19 @@ export function ss(
   <scriptfile>[${filePath}]</scriptfile>
   <scriptdeployments>
     <scriptdeployment scriptid="customdeploy_${deployName}">
-      <allroles>T</allroles>
-      <isdeployed>T</isdeployed>
-      <loglevel>DEBUG</loglevel>
-      <status>${scriptStatus}</status>
-      <executioncontext>SCHEDULED</executioncontext>
-    </scriptdeployment>
+    <isdeployed>T</isdeployed>
+    <loglevel>DEBUG</loglevel>
+    <status>NOTSCHEDULED</status>
+    <title>${fileName}</title>
+    <recurrence>
+        <daily>
+          <everyxdays>1</everyxdays>
+          <repeat>PT15M</repeat>
+          <startdate>2023-10-30</startdate>
+          <starttime>07:00:00Z</starttime>
+        </daily>
+    </recurrence>
+  </scriptdeployment>
   </scriptdeployments>
 </scheduledscript>`;
 }

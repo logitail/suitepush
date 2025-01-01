@@ -98,6 +98,10 @@ export function cs(
 
 ## Version
 
+v0.1.3 Script type added 
+- [x] Scheduled script type added
+- [x] compiled
+
 v0.1.2 Script types added 
 - [x] added restlet, suitelet, userevent, clientscript scripttype
 - [x] when the script has a description use to in the (deployment) object
