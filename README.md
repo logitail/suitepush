@@ -15,6 +15,7 @@ It leverages the power of Deno's modern ecosystem, along with user-defined templ
   - **User Event Scripts**
   - **Restlets**
   - **Suitelets**
+  - **Scheduled Scripts**
 - Modular and extensible templates with the `xml-templates.ts` file.
 - Built using TypeScript for type safety and modern JavaScript features.
 - Easy to extend for custom user inputs or additional functionality.
@@ -98,9 +99,11 @@ export function cs(
 
 ## Version
 
-v0.1.3 Script type added 
+v0.1.3 refactored code base and script type added 
 - [x] Scheduled script type added
 - [x] compiled
+- [x] refactored the code to be more modular
+- [x] deleted older version files
 
 v0.1.2 Script types added 
 - [x] added restlet, suitelet, userevent, clientscript scripttype
