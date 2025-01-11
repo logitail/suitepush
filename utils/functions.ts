@@ -7,7 +7,9 @@ export function checkSdfFolderStructure() {
   const suiteConfigPath = `${Deno.cwd()}/suitecloud.config.js`;
   if (!existsSync(suiteConfigPath)) {
     console.warn(
-      `Warning: The current directory (${Deno.cwd()}) does not appear to be an SDF folder structure. Some operations may not work as expected.`,
+      `\n
+      The current directory does not appear to be an SDF folder structure. Please navigate to a valid SDF folder before proceeding. \n
+     (${Deno.cwd()})`,
     );
     Deno.exit(1);
   }

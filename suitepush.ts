@@ -2,7 +2,7 @@
 
 // Import necessary modules
 import { Command } from "@cliffy/command";
-import { cyan } from "@std/fmt/colors";
+import { gray } from "@std/fmt/colors";
 import { createCommand } from "./commands/create.ts";
 import { checkSdfFolderStructure } from "./utils/functions.ts";
 
@@ -18,20 +18,23 @@ await new Command()
     },
   )
   .description(
-    "A CLI tool for creating SDF objects and deploying SuiteScripts to NetSuite, currently supports: Suitelet, Restlet, UserEventScript, ClientScript, ScheduledScript, MapReduceScript",
+    gray(
+      `A CLI tool for creating SDF objects and deploying SuiteScripts to NetSuite. \n Supports: Suitelet, Restlet, UserEventScript, ClientScript, ScheduledScript, MapReduceScript`,
+    ),
   )
-  .example(
-    "general use: ",
-    `$suitepush [command] [option] (enter)
-  ${
-      cyan(
-        "Please provide the path to the SuiteScript file you want to use (press 'UP' to browse, or start to type the path/filename).",
-      )
-    }`,
-  )
+  // .example(
+  //   "general use: ",
+  //   `$suitepush [command] [option] (enter)
+  // ${
+  //     cyan(
+  //       "Please provide the path to the SuiteScript file you want to use (press 'UP' to browse, or start to type the path/filename).",
+  //     )
+  //   }`,
+  // )
   .action(() => {
     // Default action when no subcommand is provided
-    console.log("Welcome to suitepush! Use --help to see available commands.");
+    console.log(`---\r
+      Welcome to suitepush! ${gray("Use--help to see available commands.")}`);
     checkSdfFolderStructure(); // Optional: Check structure if needed by default
   })
   // .type("log-level", logLevelType)
