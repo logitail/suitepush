@@ -6,16 +6,19 @@
 
 ## Overview
 SuitePush is a Deno-based tool designed for generating and managing NetSuite script deployment XML files.
-It leverages the power of Deno's modern ecosystem, along with user-defined templates, to streamline development for NetSuite scripts like MapReduce, Client Scripts, User Event Scripts, Suitelets, and more.
+It leverages the power of Deno's modern ecosystem, along with user-defined templates, to streamline development for NetSuite scripts.
+
+<!-- tip, warning, caution, important -->
+> [!TIP] supports the following script types:
+> - **Client Scripts**
+> - **MapReduce Scripts**
+> - **User Event Scripts**
+> - **Restlets**
+> - **Suitelets**
+> - **Scheduled Scripts**
 
 ## Features
-- Supports various NetSuite script types:
-  - **Client Scripts**
-  - **MapReduce Scripts**
-  - **User Event Scripts**
-  - **Restlets**
-  - **Suitelets**
-  - **Scheduled Scripts**
+
 - Modular and extensible templates with the `xml-templates.ts` file.
 - Built using TypeScript for type safety and modern JavaScript features.
 - Easy to extend for custom user inputs or additional functionality.
